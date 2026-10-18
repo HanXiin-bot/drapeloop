@@ -71,10 +71,10 @@ DrapeLoop aims to go beyond flat, cut-out-style try-on images. Each stage starts
 | Stage | Experience | Likely approach |
 |---|---|---|
 | 1. Photorealistic still (MVP) | A single image that looks like a real phone photo of the user wearing the garment, not an obviously AI-generated composite | Existing image try-on services, judged against the M1 scoring rules |
-| 2. Motion preview | Short clips from preset motions (turning around, raising arms, walking) that show how the garment moves and drapes | Existing video generation or video try-on services |
+| 2. Multi-angle stills | Several photorealistic stills of the same outfit (front, side, back); the user swipes to switch angles, giving a first sense of rotating a figure | Existing image try-on or multi-view generation, judged with the same photorealism rules; identity and garment must stay consistent across angles |
 | 3. Interactive 3D figure | A personal, figure-like avatar that can be rotated 360° and posed by dragging limbs, with garment drape and texture responding to movement | 3D body reconstruction, rigging, and cloth simulation; research-level work |
 
-A product screenshot does not contain sewing patterns or fabric properties, so drape and texture in stages 2 and 3 are AI-inferred. They must be presented as visual references, not as accurate representations of the real garment.
+A product screenshot does not contain sewing patterns or fabric properties, so unseen angles in stage 2 and drape and texture in stage 3 are AI-inferred. They must be presented as visual references, not as accurate representations of the real garment.
 
 ## 7. Evaluation and delivery gates
 
