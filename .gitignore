@@ -1,0 +1,9 @@
+# 试衣结果和测试照片只放在自己电脑上，不上传
+trial-output/
+test-photos/
+
+# API Key
+.env
+
+# Python 缓存
+__pycache__/
