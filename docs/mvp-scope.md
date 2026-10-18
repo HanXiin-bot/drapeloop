@@ -64,6 +64,18 @@ These conditions apply to enhanced US01/US07 flows. The stories describe target 
 - Full wardrobe management, social communities, styling recommendations, and custom model training.
 - Native mobile apps and WeChat mini programs; validate mobile web first.
 
+### Long-term roadmap
+
+DrapeLoop aims to go beyond flat, cut-out-style try-on images. Each stage starts only after the previous one passes its evaluation.
+
+| Stage | Experience | Likely approach |
+|---|---|---|
+| 1. Photorealistic still (MVP) | A single image that looks like a real phone photo of the user wearing the garment, not an obviously AI-generated composite | Existing image try-on services, judged against the M1 scoring rules |
+| 2. Motion preview | Short clips from preset motions (turning around, raising arms, walking) that show how the garment moves and drapes | Existing video generation or video try-on services |
+| 3. Interactive 3D figure | A personal, figure-like avatar that can be rotated 360° and posed by dragging limbs, with garment drape and texture responding to movement | 3D body reconstruction, rigging, and cloth simulation; research-level work |
+
+A product screenshot does not contain sewing patterns or fabric properties, so drape and texture in stages 2 and 3 are AI-inferred. They must be presented as visual references, not as accurate representations of the real garment.
+
 ## 7. Evaluation and delivery gates
 
 The numbers below are initial internal decision thresholds. They may be revised with recorded reasons before the first evaluation, but not changed after seeing results just to pass. They are not statistical proof.
@@ -71,7 +83,7 @@ The numbers below are initial internal decision thresholds. They may be revised 
 ### Technical validation
 
 - Prepare at least 12 consented person-photo/top combinations across body shapes and plain/patterned tops; retain failure cases.
-- Record success, latency, cost, identity preservation, proportions, garment details, and naturalness. Obvious identity changes, slimming, anatomical errors, or major garment-detail errors make a result unusable.
+- Record success, latency, cost, identity preservation, proportions, garment details, and naturalness. Obvious identity changes, slimming, anatomical errors, major garment-detail errors, or an obviously AI-generated look make a result unusable. Results should be indistinguishable from a real phone photo.
 - Initial gate: at least 9 of 12 combinations produce usable results. Record reasons for each judgment, not just successful examples. If the gate fails, continue experiments before general user trials.
 - Evaluate shape estimation and try-on separately. Use consented physical measurements or scans if evaluating circumferences; perceived likeness does not prove dimensional accuracy.
 - Record actual waiting time and total spending divided by usable results. Set acceptable wait time, per-user usage limits, and a total budget before opening trials, and enforce those limits.
