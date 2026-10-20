@@ -73,6 +73,10 @@ S10、S11 用同一个人，方便只比较颜色。
 
 专门的试衣模型（如 FASHN Try-On）不写提示词；如果必须写，用上面这段的英文版，12 组同样不改。
 
+英文版（FASHN 网页版 Agent 用；开头加了一句让它用虚拟试穿，结尾加了一句只生成一张）：
+
+> Use virtual try-on. Dress the person in the first image (person photo) in the top from the second image (garment image). Replace only the top. Keep the person's face, hairstyle, skin tone, body proportions, pose, bottoms, shoes, accessories and background exactly the same. No beautification, no slimming. The top's color, fit, length, pattern and text must exactly match the garment image. Do not bring over the model, necklace, hat, text labels or UI elements from the garment image. The result should look like a real photo taken with a phone. Generate only one image.
+
 ### 跑的规则
 
 - 先传人物照，再传衣服图；参数固定（可灵：2K · 自适应 · 1 张，不选"风格"）。
