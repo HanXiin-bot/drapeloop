@@ -6,7 +6,8 @@
     export DASHSCOPE_API_KEY=...   # 阿里云百炼
     export FASHN_API_KEY=...       # FASHN
     python3 scripts/try_once.py aliyun 人物照.jpg 上衣.jpg
-    python3 scripts/try_once.py fashn  人物照.jpg 上衣.jpg
+    python3 scripts/try_once.py fashn  人物照.jpg 上衣.jpg      # tryon-v1.6
+    python3 scripts/try_once.py fashn-max 人物照.jpg 上衣.jpg  # Try-On Max
 
 结果图保存在 trial-output/ 里（不会提交到 Git）。
 """
@@ -37,7 +38,9 @@ class TryOnError(Exception):
 
 def http(method, url, headers=None, body=None):
     """发一个 HTTP 请求，返回 (状态码, 响应内容)。"""
-    req = urllib.request.Request(url, data=body, method=method, headers=headers or {})
+    # FASHN 的图片 CDN 会拒绝 Python 默认的 User-Agent（HTTP 403），所以统一带一个
+    headers = {"User-Agent": "Mozilla/5.0 (DrapeLoop trial script)", **(headers or {})}
+    req = urllib.request.Request(url, data=body, method=method, headers=headers)
     try:
         with urllib.request.urlopen(req, timeout=60) as resp:
             return resp.status, resp.read()
@@ -172,23 +175,48 @@ def data_uri(path):
     return f"data:{mime};base64,{base64.b64encode(path.read_bytes()).decode()}"
 
 
+# M1 固定提示词的英文版（Try-On Max 才收提示词），见 docs/evaluation/m1-test-set.md
+FASHN_MAX_PROMPT = (
+    "Replace only the top. Keep the person's face, hairstyle, skin tone, body proportions, "
+    "pose, bottoms, shoes, accessories and background exactly the same. No beautification, "
+    "no slimming. The top's color, fit, length, pattern and text must exactly match the "
+    "garment image. Do not bring over the model, necklace, hat, text labels or UI elements "
+    "from the garment image. The result should look like a real photo taken with a phone."
+)
+
+
 def run_fashn(person, garment):
+    """旧模型 tryon-v1.6：每张 1 个额度，不收提示词。"""
+    return fashn_job({
+        "model_name": "tryon-v1.6",
+        "inputs": {
+            "model_image": data_uri(person),
+            "garment_image": data_uri(garment),
+            "category": "tops",
+            "garment_photo_type": "auto",
+        },
+    })
+
+
+def run_fashn_max(person, garment):
+    """新模型 Try-On Max：2k · balanced 每张 3 个额度，收提示词。"""
+    return fashn_job({
+        "model_name": "tryon-max",
+        "inputs": {
+            "model_image": data_uri(person),
+            "product_image": data_uri(garment),
+            "prompt": FASHN_MAX_PROMPT,
+            "resolution": "2k",
+            "generation_mode": "balanced",
+            "num_images": 1,
+        },
+    })
+
+
+def fashn_job(payload):
     key = require_key("FASHN_API_KEY")
     headers = {"Authorization": f"Bearer {key}"}
-    job = http_json(
-        "POST",
-        f"{FASHN_BASE}/run",
-        headers,
-        {
-            "model_name": "tryon-v1.6",
-            "inputs": {
-                "model_image": data_uri(person),
-                "garment_image": data_uri(garment),
-                "category": "tops",
-                "garment_photo_type": "auto",
-            },
-        },
-    )
+    job = http_json("POST", f"{FASHN_BASE}/run", headers, payload)
     if job.get("error"):
         raise TryOnError(f"提交失败：{job['error']}")
     job_id = job["id"]
@@ -207,7 +235,7 @@ def run_fashn(person, garment):
 
 # ---------- 主流程 ----------
 
-PROVIDERS = {"aliyun": run_aliyun, "fashn": run_fashn}
+PROVIDERS = {"aliyun": run_aliyun, "fashn": run_fashn, "fashn-max": run_fashn_max}
 
 
 def main(argv):
